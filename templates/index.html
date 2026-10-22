@@ -1,0 +1,242 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Web Content Analytics</title>
+
+    <link rel="stylesheet"
+          href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<body>
+
+    <!-- Navigation Bar -->
+    <header class="topbar">
+        <div class="brand">
+            Web<span>Analytics</span>
+        </div>
+
+        <div class="tag">
+            WEB CONTENT ANALYSIS
+        </div>
+    </header>
+
+    <main class="container">
+
+        <!-- Hero Section -->
+        <section class="hero">
+
+            <p class="eyebrow">
+                CONTENT INTELLIGENCE
+            </p>
+
+            <h1>Understand any webpage.</h1>
+
+            <p class="subtitle">
+                Extract content, measure text statistics,
+                and discover the keywords that matter.
+            </p>
+
+            <!-- URL Input Form -->
+            <form method="POST" class="url-form">
+
+                <input
+                    type="url"
+                    name="url"
+                    placeholder="https://example.com"
+                    required
+                    value="{{ request.form.get('url', '') }}"
+                >
+
+                <button type="submit">
+                    Analyze Page →
+                </button>
+
+            </form>
+
+            <p class="hint">
+                Enter a publicly accessible webpage URL.
+            </p>
+
+        </section>
+
+
+        <!-- Error Message -->
+        {% if error %}
+
+        <div class="error">
+            {{ error }}
+        </div>
+
+        {% endif %}
+
+
+        <!-- Analysis Results -->
+        {% if result %}
+
+        <section class="results">
+
+            <!-- Website Information -->
+            <div class="page-info">
+
+                <div>
+                    <p class="eyebrow">
+                        ANALYSIS RESULTS
+                    </p>
+
+                    <h2>{{ result.title }}</h2>
+
+                    <p class="page-url">
+                        {{ result.url }}
+                    </p>
+                </div>
+
+                <span class="status">
+                    Analysis complete
+                </span>
+
+            </div>
+
+
+            <!-- Statistics Cards -->
+            <div class="stats">
+
+                <div class="stat-card">
+                    <p>Total Words</p>
+                    <h3>{{ result.word_count }}</h3>
+                </div>
+
+                <div class="stat-card">
+                    <p>Unique Words</p>
+                    <h3>{{ result.unique_words }}</h3>
+                </div>
+
+                <div class="stat-card">
+                    <p>Sentences</p>
+                    <h3>{{ result.sentence_count }}</h3>
+                </div>
+
+                <div class="stat-card">
+                    <p>Paragraphs</p>
+                    <h3>{{ result.paragraph_count }}</h3>
+                </div>
+
+            </div>
+
+
+            <!-- Keyword Analysis and Content Preview -->
+            <div class="content-grid">
+
+                <!-- Top Keywords -->
+                <section class="panel">
+
+                    <h2>Top Keywords</h2>
+
+                    <p class="muted">
+                        Most frequent meaningful words
+                    </p>
+
+                    {% for keyword in result.keywords %}
+
+                    <div class="keyword">
+
+                        <span>
+                            {{ keyword.word }}
+                        </span>
+
+                        <div class="bar-track">
+
+                            <div
+                                class="bar"
+                                data-percentage="{{ keyword.percentage }}"
+                            ></div>
+
+                        </div>
+
+                        <strong>
+                            {{ keyword.count }}
+                        </strong>
+
+                    </div>
+
+                    {% else %}
+
+                    <p>No keywords found.</p>
+
+                    {% endfor %}
+
+                </section>
+
+
+                <!-- Extracted Content Preview -->
+                <section class="panel">
+
+                    <h2>Content Preview</h2>
+
+                    <p class="muted">
+                        Extracted webpage text
+                    </p>
+
+                    <div class="preview">
+                        {{ result.preview }}
+                    </div>
+
+                </section>
+
+            </div>
+
+
+            <!-- CSV Download -->
+            <form action="{{ url_for('download') }}" method="POST">
+
+                <input
+                    type="hidden"
+                    name="url"
+                    value="{{ result.url }}"
+                >
+
+                <button
+                    class="download-btn"
+                    type="submit"
+                >
+                    ↓ Download CSV Report
+                </button>
+
+            </form>
+
+        </section>
+
+        {% endif %}
+
+
+        <!-- Footer -->
+        <footer>
+            Web Content Analytics |
+            Big Data Analytics Assignment
+        </footer>
+
+    </main>
+
+
+    <!-- Keyword Bar Width Script -->
+    <script>
+        document.querySelectorAll(".bar[data-percentage]")
+            .forEach(function(bar) {
+
+                const percentage = Number(
+                    bar.dataset.percentage
+                );
+
+                if (Number.isFinite(percentage)) {
+                    bar.style.width =
+                        Math.max(0, Math.min(100, percentage)) + "%";
+                }
+
+            });
+    </script>
+
+</body>
+</html>
